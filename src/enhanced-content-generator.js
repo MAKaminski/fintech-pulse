@@ -1,17 +1,31 @@
 const OpenAI = require('openai');
 const axios = require('axios');
 const config = require('../config');
+const fs = require('fs');
 
 class EnhancedContentGenerator {
   constructor() {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY
     });
+    this.optimizationConfig = this.loadOptimizationConfig();
   }
 
-  // LinkedIn optimization constants
+  // Load optimization configuration from analytics
+  loadOptimizationConfig() {
+    try {
+      if (fs.existsSync('optimization-config.json')) {
+        return JSON.parse(fs.readFileSync('optimization-config.json', 'utf8'));
+      }
+    } catch (error) {
+      console.log('📝 No optimization config found, using default parameters');
+    }
+    return null;
+  }
+
+  // LinkedIn optimization constants with analytics integration
   getLinkedInOptimization() {
-    return {
+    const baseOptimization = {
       idealWordCount: { min: 50, max: 150, optimal: 100 },
       idealCharCount: { min: 300, max: 1300, optimal: 800 },
       attentionGrabbers: [
@@ -34,6 +48,38 @@ class EnhancedContentGenerator {
         "💳", "🏦", "📱", "🔐", "⚡", "🌐", "📊", "💰", "📈", "🎯"
       ]
     };
+
+    // Apply analytics-based optimizations if available
+    if (this.optimizationConfig?.contentGeneration) {
+      const config = this.optimizationConfig.contentGeneration;
+      
+      // Adjust word count based on high-performing posts
+      if (config.optimalWordCount) {
+        baseOptimization.idealWordCount = {
+          min: Math.max(30, config.optimalWordCount - 20),
+          max: Math.min(200, config.optimalWordCount + 20),
+          optimal: config.optimalWordCount
+        };
+      }
+
+      // Adjust emoji count based on performance
+      if (config.optimalEmojiCount) {
+        baseOptimization.idealEmojiCount = {
+          min: Math.max(3, config.optimalEmojiCount - 2),
+          max: Math.min(15, config.optimalEmojiCount + 2),
+          optimal: config.optimalEmojiCount
+        };
+      }
+
+      // Adjust attention grabbers based on performance
+      if (config.includeQuestions === false) {
+        baseOptimization.attentionGrabbers = baseOptimization.attentionGrabbers.filter(grabber => 
+          !grabber.includes('?')
+        );
+      }
+    }
+
+    return baseOptimization;
   }
 
   // Generate relevant LinkedIn mentions
@@ -387,7 +433,7 @@ Return only the image prompt, no explanations.`;
     }
   }
 
-  // Calculate engagement metrics
+  // Calculate engagement metrics with analytics integration
   calculateEngagementMetrics(postContent) {
     const optimization = this.getLinkedInOptimization();
     const wordCount = postContent.split(/\s+/).length;
@@ -427,11 +473,11 @@ Return only the image prompt, no explanations.`;
     if (hasCallToAction) engagementScore += 10;
     if (hasStats) engagementScore += 5;
 
-    // LinkedIn mentions (0-15 points) - NEW
+    // LinkedIn mentions (0-15 points)
     if (mentionCount >= 1 && mentionCount <= 2) {
       engagementScore += 15;
     } else if (mentionCount > 2) {
-      engagementScore += 10; // Bonus for more mentions but not optimal
+      engagementScore += 10;
     }
 
     // Attention grabber (0-20 points)
@@ -440,18 +486,30 @@ Return only the image prompt, no explanations.`;
     );
     if (hasAttentionGrabber) engagementScore += 20;
 
+    // Apply analytics-based engagement multiplier if available
+    let finalEngagementScore = engagementScore;
+    let multiplier = 1 + (engagementScore / 100);
+    let optimizationApplied = false;
+
+    if (this.optimizationConfig?.engagementScoring?.multiplier) {
+      const analyticsMultiplier = this.optimizationConfig.engagementScoring.multiplier;
+      finalEngagementScore = Math.min(100, Math.round(engagementScore * analyticsMultiplier));
+      multiplier = 1 + (finalEngagementScore / 100);
+      optimizationApplied = true;
+    }
+
     // Estimated metrics based on score
     const baseViews = 500;
     const baseClicks = 25;
     const baseInteractions = 15;
-
-    const multiplier = 1 + (engagementScore / 100);
     
     return {
-      engagementScore,
+      engagementScore: finalEngagementScore,
       estimatedViews: Math.round(baseViews * multiplier),
       estimatedClicks: Math.round(baseClicks * multiplier),
       estimatedInteractions: Math.round(baseInteractions * multiplier),
+      optimizationApplied,
+      analyticsMultiplier: this.optimizationConfig?.engagementScoring?.multiplier,
       metrics: {
         wordCount,
         charCount,

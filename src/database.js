@@ -9,6 +9,46 @@ class PostDatabase {
 
   async initialize() {
     await this.init();
+    await this.migrateDatabase();
+  }
+
+  async migrateDatabase() {
+    return new Promise((resolve, reject) => {
+      // Check if actual_engagement_rate column exists
+      this.db.get("PRAGMA table_info(posts)", [], (err, rows) => {
+        if (err) {
+          console.error('Error checking table schema:', err.message);
+          reject(err);
+          return;
+        }
+        
+        // Check if actual_engagement_rate column exists
+        this.db.all("PRAGMA table_info(posts)", [], (err, columns) => {
+          if (err) {
+            console.error('Error checking table schema:', err.message);
+            reject(err);
+            return;
+          }
+          
+          const hasEngagementRate = columns.some(col => col.name === 'actual_engagement_rate');
+          
+          if (!hasEngagementRate) {
+            console.log('🔄 Adding actual_engagement_rate column to posts table...');
+            this.db.run("ALTER TABLE posts ADD COLUMN actual_engagement_rate REAL", (err) => {
+              if (err) {
+                console.error('Error adding actual_engagement_rate column:', err.message);
+                reject(err);
+              } else {
+                console.log('✅ Added actual_engagement_rate column successfully');
+                resolve();
+              }
+            });
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
   }
 
   async init() {
@@ -69,6 +109,7 @@ class PostDatabase {
           actual_likes INTEGER,
           actual_comments INTEGER,
           actual_shares INTEGER,
+          actual_engagement_rate REAL,
           notes TEXT
         )
       `;
@@ -259,7 +300,12 @@ class PostDatabase {
           AVG(engagement_score) as avg_engagement_score,
           AVG(estimated_views) as avg_estimated_views,
           AVG(estimated_clicks) as avg_estimated_clicks,
-          AVG(estimated_interactions) as avg_estimated_interactions
+          AVG(estimated_interactions) as avg_estimated_interactions,
+          AVG(actual_views) as avg_actual_views,
+          AVG(actual_likes) as avg_actual_likes,
+          AVG(actual_comments) as avg_actual_comments,
+          AVG(actual_shares) as avg_actual_shares,
+          AVG(actual_engagement_rate) as avg_actual_engagement_rate
         FROM posts
       `;
       
@@ -268,6 +314,48 @@ class PostDatabase {
           reject(err);
         } else {
           resolve(row);
+        }
+      });
+    });
+  }
+
+  // Get posts with LinkedIn IDs
+  async getPostsWithLinkedInIds() {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT id, post_number, content, linkedin_post_id, engagement_score, 
+               estimated_views, estimated_clicks, estimated_interactions,
+               actual_views, actual_likes, actual_comments, actual_shares, actual_engagement_rate
+        FROM posts 
+        WHERE linkedin_post_id IS NOT NULL AND post_decision = 'posted'
+        ORDER BY created_at DESC
+      `;
+      
+      this.db.all(sql, [], (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  }
+
+  // Update post analytics with actual LinkedIn metrics
+  async updatePostAnalytics(postId, views, likes, comments, shares, clicks, engagementRate) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE posts 
+        SET actual_views = ?, actual_likes = ?, actual_comments = ?, 
+            actual_shares = ?, actual_clicks = ?, actual_engagement_rate = ?
+        WHERE id = ?
+      `;
+      
+      this.db.run(sql, [views, likes, comments, shares, clicks, engagementRate, postId], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
         }
       });
     });

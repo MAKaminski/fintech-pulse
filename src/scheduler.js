@@ -1,13 +1,15 @@
 const cron = require('node-cron');
 const moment = require('moment-timezone');
-const ContentGenerator = require('./content-generator');
+const EnhancedContentGenerator = require('./enhanced-content-generator');
 const LinkedInAPI = require('./linkedin-api');
+const AutoOptimizer = require('./auto-optimize');
 const config = require('../config');
 
 class PostScheduler {
   constructor() {
-    this.contentGenerator = new ContentGenerator();
+    this.contentGenerator = new EnhancedContentGenerator();
     this.linkedinAPI = new LinkedInAPI();
+    this.autoOptimizer = new AutoOptimizer();
     this.isRunning = false;
   }
 
@@ -63,18 +65,57 @@ class PostScheduler {
     try {
       console.log('🤖 Generating FintechPulse content...');
       
-      // Generate content
+      // Step 1: Run auto-optimization if needed
+      console.log('🔄 Checking if optimization is needed...');
+      const shouldOptimize = await this.autoOptimizer.shouldOptimize();
+      
+      if (shouldOptimize.shouldOptimize) {
+        console.log(`🔄 Running auto-optimization: ${shouldOptimize.reason}`);
+        const optimizationResult = await this.autoOptimizer.runAutoOptimization();
+        
+        if (optimizationResult.success) {
+          console.log('✅ Optimization completed successfully!');
+          console.log(`📊 Posts analyzed: ${optimizationResult.postsAnalyzed}`);
+          console.log(`🎯 Engagement multiplier: ${optimizationResult.config.engagementScoring?.multiplier?.toFixed(2)}`);
+          
+          // Reload optimization config in content generator
+          this.contentGenerator.optimizationConfig = this.contentGenerator.loadOptimizationConfig();
+        } else {
+          console.log('⚠️  Optimization failed, continuing with current settings');
+        }
+      } else {
+        console.log(`✅ Optimization not needed: ${shouldOptimize.reason}`);
+      }
+      
+      // Step 2: Generate optimized content
+      console.log('📝 Generating optimized content...');
       let postContent;
+      let imageResult = { success: false };
+      
       try {
-        postContent = await this.contentGenerator.generatePost();
+        postContent = await this.contentGenerator.generateOptimizedPost();
+        
+        // Generate image
+        console.log('🎨 Generating image...');
+        imageResult = await this.contentGenerator.generateImage(postContent);
+        
       } catch (error) {
         console.log('⚠️  OpenAI failed, using fallback content...');
-        postContent = this.contentGenerator.generateFallbackPost();
+        postContent = this.contentGenerator.generateFallbackOptimizedPost();
+      }
+
+      // Step 3: Calculate engagement metrics
+      const engagementMetrics = this.contentGenerator.calculateEngagementMetrics(postContent);
+      console.log(`📊 Engagement Score: ${engagementMetrics.engagementScore}/100`);
+      console.log(`👁️  Estimated Views: ${engagementMetrics.estimatedViews.toLocaleString()}`);
+      
+      if (engagementMetrics.optimizationApplied) {
+        console.log(`🔄 Analytics optimization applied (multiplier: ${engagementMetrics.analyticsMultiplier?.toFixed(2)})`);
       }
 
       console.log('📝 Content generated successfully');
       
-      // Post to LinkedIn
+      // Step 4: Post to LinkedIn
       await this.linkedinAPI.createPost(postContent, imageResult.success ? imageResult.imagePath : null);
       
       // Log success

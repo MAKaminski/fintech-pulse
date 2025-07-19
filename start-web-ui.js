@@ -30,14 +30,36 @@ app.post('/api/view-images', (req, res) => {
   });
 });
 
-app.post('/api/view-analytics', (req, res) => {
-  exec('npm run analytics', { cwd: __dirname }, (error, stdout, stderr) => {
-    if (error) {
-      res.json({ success: false, message: error.message });
-      return;
-    }
-    res.json({ success: true, message: 'Analytics viewed successfully!', output: stdout });
-  });
+app.post('/api/view-analytics', async (req, res) => {
+  try {
+    const AnalyticsDashboard = require('./src/analytics-dashboard');
+    const dashboard = new AnalyticsDashboard();
+    await dashboard.initialize();
+    
+    // Get optimization status
+    const optimizationStatus = dashboard.contentGenerator.getOptimizationStatus();
+    
+    // Get performance analysis
+    const performanceAnalysis = await dashboard.contentGenerator.analyzeContentPerformance();
+    
+    // Get database stats
+    const stats = await dashboard.database.getPostStats();
+    
+    const analyticsData = {
+      optimizationStatus,
+      performanceAnalysis,
+      stats,
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json({ 
+      success: true, 
+      message: 'Analytics data retrieved successfully!', 
+      data: analyticsData 
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 });
 
 app.get('/api/images', (req, res) => {
@@ -246,11 +268,57 @@ app.get('/', (req, res) => {
                 const result = await response.json();
                 
                 if (result.success) {
-                    showModal('Analytics', 
-                        '<div class="success">✅ ' + result.message + '</div>' +
-                        '<pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; white-space: pre-wrap;">' + 
-                        (result.output || 'Analytics data retrieved successfully!') + '</pre>'
-                    );
+                    const data = result.data;
+                    let analyticsHtml = '<div class="success">✅ ' + result.message + '</div>';
+                    
+                    // Optimization Status
+                    if (data.optimizationStatus) {
+                        const status = data.optimizationStatus;
+                        analyticsHtml += '<h3>🎯 Optimization Status</h3>';
+                        analyticsHtml += `<p><strong>Status:</strong> ${status.status === 'optimized' ? '✅ Optimized' : '❌ Not Optimized'}</p>`;
+                        if (status.confidence) analyticsHtml += `<p><strong>Confidence:</strong> ${status.confidence.toUpperCase()}</p>`;
+                        if (status.engagementMultiplier) analyticsHtml += `<p><strong>Engagement Multiplier:</strong> ${status.engagementMultiplier.toFixed(2)}</p>`;
+                        if (status.recommendations && status.recommendations.length > 0) {
+                            analyticsHtml += '<p><strong>Recommendations:</strong></p><ul>';
+                            status.recommendations.forEach(rec => analyticsHtml += `<li>${rec}</li>`);
+                            analyticsHtml += '</ul>';
+                        }
+                    }
+                    
+                    // Performance Summary
+                    if (data.performanceAnalysis && data.performanceAnalysis.summary) {
+                        const summary = data.performanceAnalysis.summary;
+                        analyticsHtml += '<h3>📈 Performance Summary</h3>';
+                        analyticsHtml += `<p><strong>Total Posts Analyzed:</strong> ${summary.totalPosts}</p>`;
+                        analyticsHtml += `<p><strong>High Performers (>5% engagement):</strong> ${summary.highPerformers}</p>`;
+                        analyticsHtml += `<p><strong>Low Performers (<2% engagement):</strong> ${summary.lowPerformers}</p>`;
+                        analyticsHtml += `<p><strong>Average Variance:</strong> ${summary.averageVariance?.toFixed(1) || 'N/A'}%</p>`;
+                    }
+                    
+                    // Database Stats
+                    if (data.stats) {
+                        const stats = data.stats;
+                        analyticsHtml += '<h3>💾 Database Statistics</h3>';
+                        analyticsHtml += `<p><strong>Total Posts:</strong> ${stats.total_posts || 0}</p>`;
+                        analyticsHtml += `<p><strong>Posted:</strong> ${stats.posted_posts || 0}</p>`;
+                        analyticsHtml += `<p><strong>Average Engagement Score:</strong> ${stats.avg_engagement_score?.toFixed(1) || 'N/A'}/100</p>`;
+                        analyticsHtml += `<p><strong>Average Actual Views:</strong> ${stats.avg_actual_views?.toLocaleString() || 'N/A'}</p>`;
+                        analyticsHtml += `<p><strong>Average Engagement Rate:</strong> ${stats.avg_actual_engagement_rate?.toFixed(2) || 'N/A'}%</p>`;
+                    }
+                    
+                    // Recommendations
+                    if (data.performanceAnalysis && data.performanceAnalysis.suggestions) {
+                        const suggestions = data.performanceAnalysis.suggestions;
+                        if (suggestions.length > 0) {
+                            analyticsHtml += '<h3>💡 Recommendations</h3><ul>';
+                            suggestions.forEach(suggestion => {
+                                analyticsHtml += `<li><strong>${suggestion.title || suggestion.type}:</strong> ${suggestion.description || suggestion.action}</li>`;
+                            });
+                            analyticsHtml += '</ul>';
+                        }
+                    }
+                    
+                    showModal('Analytics Dashboard', analyticsHtml);
                 } else {
                     showModal('Error', '<div class="error">❌ ' + result.message + '</div>');
                 }

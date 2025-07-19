@@ -1,0 +1,10 @@
+{
+  "engagementScoring": {
+    "multiplier": 0,
+    "description": "Adjust engagement scoring by 0.00x to match actual performance",
+    "confidence": "medium"
+  },
+  "contentGeneration": {},
+  "lastOptimization": "2025-07-18T21:26:34.057Z",
+  "confidence": "medium"
+}
