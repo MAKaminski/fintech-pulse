@@ -31,6 +31,7 @@ class PostDatabase {
           }
           
           const hasEngagementRate = columns.some(col => col.name === 'actual_engagement_rate');
+          const hasPostType = columns.some(col => col.name === 'post_type');
           
           if (!hasEngagementRate) {
             console.log('🔄 Adding actual_engagement_rate column to posts table...');
@@ -40,6 +41,17 @@ class PostDatabase {
                 reject(err);
               } else {
                 console.log('✅ Added actual_engagement_rate column successfully');
+                resolve();
+              }
+            });
+          } else if (!hasPostType) {
+            console.log('🔄 Adding post_type column to posts table...');
+            this.db.run("ALTER TABLE posts ADD COLUMN post_type TEXT DEFAULT 'fintech'", (err) => {
+              if (err) {
+                console.error('Error adding post_type column:', err.message);
+                reject(err);
+              } else {
+                console.log('✅ Added post_type column successfully');
                 resolve();
               }
             });
@@ -110,6 +122,7 @@ class PostDatabase {
           actual_comments INTEGER,
           actual_shares INTEGER,
           actual_engagement_rate REAL,
+          post_type TEXT DEFAULT 'fintech',
           notes TEXT
         )
       `;
@@ -193,6 +206,7 @@ class PostDatabase {
         hasCallToAction,
         hasStats,
         hasAttentionGrabber,
+        postType,
         notes
       } = postData;
 
@@ -202,8 +216,8 @@ class PostDatabase {
           time_of_day, day_of_week, word_count, character_count, emoji_count,
           engagement_score, estimated_views, estimated_clicks, estimated_interactions,
           similarity_score, has_question, has_call_to_action, has_stats,
-          has_attention_grabber, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          has_attention_grabber, post_type, notes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       this.db.run(sql, [
@@ -211,7 +225,7 @@ class PostDatabase {
         timeOfDay, dayOfWeek, wordCount, characterCount, emojiCount,
         engagementScore, estimatedViews, estimatedClicks, estimatedInteractions,
         similarityScore, hasQuestion, hasCallToAction, hasStats,
-        hasAttentionGrabber, notes
+        hasAttentionGrabber, postType, notes
       ], function(err) {
         if (err) {
           reject(err);

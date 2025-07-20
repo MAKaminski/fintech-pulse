@@ -2,12 +2,14 @@ const readline = require('readline');
 const EnhancedContentGenerator = require('./enhanced-content-generator');
 const PersonalContentGenerator = require('./personal-content-generator');
 const PostDatabase = require('./database');
+const LinkedInAPI = require('./linkedin-api');
 
 class UnifiedPostGenerator {
   constructor() {
     this.enhancedGenerator = new EnhancedContentGenerator();
     this.personalGenerator = new PersonalContentGenerator();
     this.database = new PostDatabase();
+    this.linkedinAPI = new LinkedInAPI();
     this.rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
@@ -286,9 +288,92 @@ class UnifiedPostGenerator {
   // Approve and post
   async approveAndPost(postContent, imageResult, postType) {
     console.log(`\n✅ Approving ${postType} post for publishing...`);
-    // Here you would integrate with LinkedIn API to actually post
-    console.log('📤 Post would be published to LinkedIn (API integration needed)');
-    console.log('💡 To implement actual posting, integrate with LinkedIn API');
+    
+    try {
+      // Test LinkedIn connection first
+      console.log('🔗 Testing LinkedIn connection...');
+      const isConnected = await this.linkedinAPI.testConnection();
+      
+      if (!isConnected) {
+        console.log('❌ LinkedIn connection failed. Please authenticate first.');
+        console.log('💡 Run: npm run auth');
+        return;
+      }
+
+      // Confirm posting
+      const confirmed = await this.confirmPosting(postContent, postType);
+      if (!confirmed) {
+        console.log('❌ Posting cancelled by user.');
+        return;
+      }
+
+      // Post to LinkedIn
+      console.log('📤 Posting to LinkedIn...');
+      const postResult = await this.linkedinAPI.createPost(
+        postContent, 
+        imageResult.success ? imageResult.imagePath : null
+      );
+
+      if (postResult) {
+        console.log('🎉 Post published successfully!');
+        console.log(`📊 Post ID: ${postResult.id}`);
+        
+        // Save to database
+        await this.savePostToDatabase(postContent, imageResult, postType, postResult.id);
+        
+        console.log('💾 Post saved to database for analytics tracking.');
+      }
+
+    } catch (error) {
+      console.error('❌ Error posting to LinkedIn:', error.message);
+      
+      if (error.message.includes('401') || error.message.includes('expired')) {
+        console.log('🔑 Access token may be expired. Please re-authenticate:');
+        console.log('💡 Run: npm run auth');
+      }
+    }
+  }
+
+  // Confirm posting with user
+  async confirmPosting(postContent, postType) {
+    return new Promise((resolve) => {
+      console.log('\n📝 Final Review:');
+      console.log('================');
+      console.log(postContent);
+      console.log('\n🤔 Are you sure you want to post this to LinkedIn? (y/n): ');
+      
+      this.rl.question('', (answer) => {
+        resolve(answer.toLowerCase().startsWith('y'));
+      });
+    });
+  }
+
+  // Save post to database
+  async savePostToDatabase(postContent, imageResult, postType, linkedinPostId) {
+    try {
+      const postNumber = await this.database.getNextPostNumber();
+      
+      const postData = {
+        postNumber,
+        content: postContent,
+        imagePath: imageResult.success ? imageResult.imagePath : null,
+        postType: postType, // 'fintech' or 'personal'
+        postDecision: 'posted',
+        linkedinPostId,
+        postedAt: new Date().toISOString(),
+        // Calculate engagement metrics
+        wordCount: postContent.split(/\s+/).length,
+        characterCount: postContent.length,
+        emojiCount: (postContent.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu) || []).length,
+        notes: `Generated via unified post generator - ${postType} post`
+      };
+
+      await this.database.savePost(postData);
+      console.log('✅ Post saved to database successfully.');
+      
+    } catch (error) {
+      console.error('❌ Error saving to database:', error.message);
+    }
   }
 
   // Edit content manually
