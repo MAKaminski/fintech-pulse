@@ -82,27 +82,44 @@ class EnhancedContentGenerator {
     return baseOptimization;
   }
 
-  // Generate relevant LinkedIn mentions
+  // Generate relevant LinkedIn mentions with proper LinkedIn formatting
   async generateLinkedInMentions() {
+    // LinkedIn-compatible mentions with proper company names and LinkedIn URLs
     const fintechCompanies = [
-      "@Stripe", "@Square", "@PayPal", "@Coinbase", "@Robinhood", "@Chime", "@Affirm", 
-      "@Klarna", "@Plaid", "@Brex", "@Revolut", "@N26", "@Monzo", "@Wise", "@Adyen",
-      "@Block", "@Shopify", "@ShopifyPayments", "@Afterpay", "@Marqeta", "@Bill.com",
-      "@Toast", "@Lightspeed", "@Fiserv", "@FIS", "@JackHenry", "@Temenos", "@Mambu"
+      { name: "Stripe", linkedin: "stripe", display: "Stripe" },
+      { name: "Square", linkedin: "square", display: "Square" },
+      { name: "PayPal", linkedin: "paypal", display: "PayPal" },
+      { name: "Coinbase", linkedin: "coinbase", display: "Coinbase" },
+      { name: "Robinhood", linkedin: "robinhood-markets", display: "Robinhood" },
+      { name: "Chime", linkedin: "chime", display: "Chime" },
+      { name: "Affirm", linkedin: "affirm", display: "Affirm" },
+      { name: "Klarna", linkedin: "klarna", display: "Klarna" },
+      { name: "Plaid", linkedin: "plaid", display: "Plaid" },
+      { name: "Brex", linkedin: "brex", display: "Brex" },
+      { name: "Revolut", linkedin: "revolut", display: "Revolut" },
+      { name: "Shopify", linkedin: "shopify", display: "Shopify" },
+      { name: "Block", linkedin: "block", display: "Block" },
+      { name: "Adyen", linkedin: "adyen", display: "Adyen" },
+      { name: "Wise", linkedin: "wise", display: "Wise" }
     ];
 
     const fintechIndividuals = [
-      "@PatrickCollison", "@JohnCollison", "@JackDorsey", "@BrianArmstrong", 
-      "@VladTenev", "@BaijuBhatt", "@MaxLevchin", "@DanielEk", "@SebastianSiemiatkowski",
-      "@NiklasAdalberth", "@VictorJacobsson", "@AnneBoden", "@TomBlomfield", 
-      "@TaavetHinrikus", "@KristoKaarmann", "@ValentinStalf", "@MaximilianTayenthal",
-      "@HenriqueDubugras", "@PedroFranceschi", "@MichaelReitblat", "@OlegFomenko"
+      { name: "Patrick Collison", linkedin: "patrick-collison", display: "Patrick Collison" },
+      { name: "Jack Dorsey", linkedin: "jack-dorsey", display: "Jack Dorsey" },
+      { name: "Brian Armstrong", linkedin: "brian-armstrong", display: "Brian Armstrong" },
+      { name: "Vlad Tenev", linkedin: "vlad-tenev", display: "Vlad Tenev" },
+      { name: "Max Levchin", linkedin: "max-levchin", display: "Max Levchin" },
+      { name: "Daniel Ek", linkedin: "daniel-ek", display: "Daniel Ek" },
+      { name: "Anne Boden", linkedin: "anne-boden", display: "Anne Boden" },
+      { name: "Tom Blomfield", linkedin: "tom-blomfield", display: "Tom Blomfield" }
     ];
 
     const peExecutives = [
-      "@StephenSchwarzman", "@HenryKravis", "@GeorgeRoberts", "@LeonBlack",
-      "@MarcRowan", "@JoshHarris", "@DavidRubenstein", "@GlennYoungkin",
-      "@JonathanGray", "@ScottNuttall", "@ToddBoehly", "@JoseFelixBasagoiti"
+      { name: "Stephen Schwarzman", linkedin: "stephen-schwarzman", display: "Stephen Schwarzman" },
+      { name: "Henry Kravis", linkedin: "henry-kravis", display: "Henry Kravis" },
+      { name: "Marc Rowan", linkedin: "marc-rowan", display: "Marc Rowan" },
+      { name: "David Rubenstein", linkedin: "david-rubenstein", display: "David Rubenstein" },
+      { name: "Jonathan Gray", linkedin: "jonathan-gray", display: "Jonathan Gray" }
     ];
 
     // Randomly select 0-2 mentions
@@ -112,7 +129,7 @@ class EnhancedContentGenerator {
 
     for (let i = 0; i < numMentions; i++) {
       const randomMention = allMentions[Math.floor(Math.random() * allMentions.length)];
-      if (!selectedMentions.includes(randomMention)) {
+      if (!selectedMentions.some(m => m.name === randomMention.name)) {
         selectedMentions.push(randomMention);
       }
     }
@@ -184,7 +201,14 @@ class EnhancedContentGenerator {
       const attentionGrabber = optimization.attentionGrabbers[Math.floor(Math.random() * optimization.attentionGrabbers.length)];
       const emojis = [...optimization.highEngagementEmojis, ...optimization.fintechEmojis];
       
-      const mentionsText = mentions.length > 0 ? `\nMENTIONS TO INCLUDE: ${mentions.join(' ')}` : '';
+      // Format mentions for LinkedIn
+      const mentionsText = mentions.length > 0 ? 
+        `\nMENTIONS TO INCLUDE: ${mentions.map(m => m.display).join(', ')}` : '';
+      const linkedinMentions = mentions.map(m => 
+        m.linkedin.includes('company') ? 
+          `https://www.linkedin.com/company/${m.linkedin}` : 
+          `https://www.linkedin.com/in/${m.linkedin}`
+      );
       
       const prompt = `Create a LinkedIn post for FintechPulse with these EXACT requirements:
 
@@ -216,6 +240,8 @@ MENTION REQUIREMENTS:
 - Use mentions to reference companies/individuals in context
 - Don't force mentions - integrate them smoothly
 - Mentions should add value to the conversation
+- For LinkedIn mentions, use the company/person name naturally in the text
+- LinkedIn will automatically link mentions when the post is published
 
 TECHNICAL REQUIREMENTS:
 - Word count: ${optimization.idealWordCount.optimal} words (±20)
@@ -256,21 +282,35 @@ FORMAT: Return only the post content, no explanations.`;
     const attentionGrabber = optimization.attentionGrabbers[Math.floor(Math.random() * optimization.attentionGrabbers.length)];
     const emojis = optimization.fintechEmojis;
     
-    // Generate mentions for fallback posts
-    const fintechCompanies = ["@Stripe", "@Square", "@PayPal", "@Coinbase", "@Robinhood", "@Chime", "@Affirm"];
-    const fintechIndividuals = ["@PatrickCollison", "@JackDorsey", "@BrianArmstrong", "@VladTenev"];
+    // Generate mentions for fallback posts using proper LinkedIn format
+    const fintechCompanies = [
+      { name: "Stripe", display: "Stripe" },
+      { name: "Square", display: "Square" },
+      { name: "PayPal", display: "PayPal" },
+      { name: "Coinbase", display: "Coinbase" },
+      { name: "Robinhood", display: "Robinhood" },
+      { name: "Chime", display: "Chime" },
+      { name: "Affirm", display: "Affirm" }
+    ];
+    const fintechIndividuals = [
+      { name: "Patrick Collison", display: "Patrick Collison" },
+      { name: "Jack Dorsey", display: "Jack Dorsey" },
+      { name: "Brian Armstrong", display: "Brian Armstrong" },
+      { name: "Vlad Tenev", display: "Vlad Tenev" }
+    ];
     const allMentions = [...fintechCompanies, ...fintechIndividuals];
     
     const mentions = [];
     const numMentions = Math.floor(Math.random() * 3); // 0, 1, or 2
     for (let i = 0; i < numMentions; i++) {
       const randomMention = allMentions[Math.floor(Math.random() * allMentions.length)];
-      if (!mentions.includes(randomMention)) {
+      if (!mentions.some(m => m.name === randomMention.name)) {
         mentions.push(randomMention);
       }
     }
     
-    const mentionsText = mentions.length > 0 ? `\n\n💼 What do you think ${mentions.join(' ')}?` : '';
+    const mentionsText = mentions.length > 0 ? 
+      `\n\n💼 What do you think ${mentions.map(m => m.display).join(', ')}?` : '';
     
           const templates = [
         `${attentionGrabber} 78% of traditional banks will be obsolete by 2030. 💥
@@ -442,7 +482,8 @@ Return only the image prompt, no explanations.`;
     const hasQuestion = /\?/.test(postContent);
     const hasCallToAction = /\b(DM|follow|connect|share|comment|like)\b/i.test(postContent);
     const hasStats = /\d+%|\$\d+|\d+ billion|\d+ million/i.test(postContent);
-    const mentionCount = (postContent.match(/@\w+/g) || []).length;
+    // Count mentions by looking for company/person names in the content
+    const mentionCount = this.countMentionsInContent(postContent);
 
     // Engagement scoring algorithm
     let engagementScore = 0;
@@ -546,6 +587,29 @@ Return only the image prompt, no explanations.`;
       isTooSimilar: maxSimilarity > 0.7,
       recommendation: maxSimilarity > 0.7 ? 'Regenerate - too similar to previous posts' : 'Good - sufficient uniqueness'
     };
+  }
+
+  // Count mentions in content by looking for company/person names
+  countMentionsInContent(postContent) {
+    const allMentions = [
+      // Companies
+      "Stripe", "Square", "PayPal", "Coinbase", "Robinhood", "Chime", "Affirm",
+      "Klarna", "Plaid", "Brex", "Revolut", "Shopify", "Block", "Adyen", "Wise",
+      // Individuals
+      "Patrick Collison", "Jack Dorsey", "Brian Armstrong", "Vlad Tenev",
+      "Max Levchin", "Daniel Ek", "Anne Boden", "Tom Blomfield",
+      "Stephen Schwarzman", "Henry Kravis", "Marc Rowan", "David Rubenstein",
+      "Jonathan Gray"
+    ];
+
+    let mentionCount = 0;
+    for (const mention of allMentions) {
+      if (postContent.includes(mention)) {
+        mentionCount++;
+      }
+    }
+
+    return mentionCount;
   }
 }
 

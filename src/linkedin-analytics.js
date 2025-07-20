@@ -271,7 +271,7 @@ class LinkedInAnalytics {
     const hasQuestions = posts.filter(post => post.content.includes('?')).length;
     const hasStats = posts.filter(post => /\d+%|\$\d+|\d+ billion|\d+ million/i.test(post.content)).length;
     const hasEmojis = posts.filter(post => (post.content.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu) || []).length > 5).length;
-    const hasMentions = posts.filter(post => (post.content.match(/@\w+/g) || []).length > 0).length;
+    const hasMentions = posts.filter(post => this.countMentionsInContent(post.content) > 0).length;
 
     if (hasQuestions > posts.length * 0.7) elements.push('Questions');
     if (hasStats > posts.length * 0.7) elements.push('Statistics');
@@ -322,7 +322,7 @@ class LinkedInAnalytics {
             sum + (post.content.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu) || []).length, 0) / highPerformers.length),
           includeQuestions: highPerformers.filter(post => post.content.includes('?')).length > highPerformers.length * 0.7,
           includeStats: highPerformers.filter(post => /\d+%|\$\d+|\d+ billion|\d+ million/i.test(post.content)).length > highPerformers.length * 0.7,
-          includeMentions: highPerformers.filter(post => (post.content.match(/@\w+/g) || []).length > 0).length > highPerformers.length * 0.7
+          includeMentions: highPerformers.filter(post => this.countMentionsInContent(post.content) > 0).length > highPerformers.length * 0.7
         };
       }
 
@@ -404,6 +404,29 @@ class LinkedInAnalytics {
       console.error('❌ Error generating analytics report:', error.message);
       return null;
     }
+  }
+
+  // Count mentions in content by looking for company/person names
+  countMentionsInContent(postContent) {
+    const allMentions = [
+      // Companies
+      "Stripe", "Square", "PayPal", "Coinbase", "Robinhood", "Chime", "Affirm",
+      "Klarna", "Plaid", "Brex", "Revolut", "Shopify", "Block", "Adyen", "Wise",
+      // Individuals
+      "Patrick Collison", "Jack Dorsey", "Brian Armstrong", "Vlad Tenev",
+      "Max Levchin", "Daniel Ek", "Anne Boden", "Tom Blomfield",
+      "Stephen Schwarzman", "Henry Kravis", "Marc Rowan", "David Rubenstein",
+      "Jonathan Gray"
+    ];
+
+    let mentionCount = 0;
+    for (const mention of allMentions) {
+      if (postContent.includes(mention)) {
+        mentionCount++;
+      }
+    }
+
+    return mentionCount;
   }
 }
 

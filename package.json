@@ -18,6 +18,7 @@
     "adaptive-preview": "node src/adaptive-content-generator.js",
     "auto-optimize": "node src/auto-optimize.js",
     "demo-integration": "node src/demo-integration.js",
+    "generate-post": "node src/unified-post-generator.js",
     "view-images": "node src/view-images.js",
     "web-ui": "node src/web-ui.js",
     "simple-ui": "node src/simple-web-ui.js",
