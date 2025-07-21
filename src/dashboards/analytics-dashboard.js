@@ -1,6 +1,6 @@
-const LinkedInAnalytics = require('./linkedin-analytics');
-const AdaptiveContentGenerator = require('./adaptive-content-generator');
-const PostDatabase = require('./database');
+const LinkedInAnalytics = require('../utils/linkedin-analytics');
+const AdaptiveContentGenerator = require('../generators/fintech/adaptive-generator');
+const PostDatabase = require('../utils/database');
 const fs = require('fs');
 
 class AnalyticsDashboard {

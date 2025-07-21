@@ -1,5 +1,5 @@
 const OpenAI = require('openai');
-const config = require('../config');
+const config = require('../../../config.js');
 
 class ContentGenerator {
   constructor() {

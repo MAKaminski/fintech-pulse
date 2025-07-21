@@ -1,13 +1,15 @@
 const readline = require('readline');
-const EnhancedContentGenerator = require('./enhanced-content-generator');
-const PersonalContentGenerator = require('./personal-content-generator');
-const PostDatabase = require('./database');
-const LinkedInAPI = require('./linkedin-api');
+const EnhancedContentGenerator = require('../generators/fintech/generator');
+const PersonalContentGenerator = require('../generators/personal/generator');
+const MichaelDavisGenerator = require('../generators/michael-davis/generator');
+const PostDatabase = require('../utils/database');
+const LinkedInAPI = require('../utils/linkedin-api');
 
 class UnifiedPostGenerator {
   constructor() {
     this.enhancedGenerator = new EnhancedContentGenerator();
     this.personalGenerator = new PersonalContentGenerator();
+    this.michaelDavisGenerator = new MichaelDavisGenerator();
     this.database = new PostDatabase();
     this.linkedinAPI = new LinkedInAPI();
     this.rl = readline.createInterface({
@@ -34,6 +36,8 @@ class UnifiedPostGenerator {
         await this.generateFintechPost();
       } else if (postType === 'personal') {
         await this.generatePersonalPost();
+      } else if (postType === 'michael-davis') {
+        await this.generateMichaelDavisPost();
       } else {
         console.log('❌ Invalid selection. Exiting...');
         process.exit(0);
@@ -52,9 +56,10 @@ class UnifiedPostGenerator {
       console.log('📝 What type of post would you like to generate?');
       console.log('1. FintechPulse Post (Business/Industry focused)');
       console.log('2. Personal Post (Personal branding/opportunities)');
-      console.log('3. Exit\n');
+      console.log('3. Michael Davis Post (Exonomist style)');
+      console.log('4. Exit\n');
 
-      this.rl.question('Enter your choice (1-3): ', (answer) => {
+      this.rl.question('Enter your choice (1-4): ', (answer) => {
         switch (answer.trim()) {
           case '1':
             resolve('fintech');
@@ -63,10 +68,13 @@ class UnifiedPostGenerator {
             resolve('personal');
             break;
           case '3':
+            resolve('michael-davis');
+            break;
+          case '4':
             resolve('exit');
             break;
           default:
-            console.log('❌ Invalid choice. Please enter 1, 2, or 3.');
+            console.log('❌ Invalid choice. Please enter 1, 2, 3, or 4.');
             resolve(this.selectPostType());
         }
       });
@@ -127,6 +135,106 @@ class UnifiedPostGenerator {
     } catch (error) {
       console.error('❌ Error generating personal post:', error.message);
     }
+  }
+
+  // Generate Michael Davis post
+  async generateMichaelDavisPost() {
+    console.log('\n🎯 Generating Michael Davis Post...');
+    console.log('=====================================\n');
+
+    try {
+      const topicType = await this.selectMichaelDavisTopic();
+      
+      if (topicType === 'back') {
+        return;
+      }
+      
+      let postContent;
+      if (topicType === 'specific') {
+        const specificTopic = await this.selectSpecificTopic();
+        if (specificTopic === 'back') {
+          return this.generateMichaelDavisPost();
+        }
+        postContent = await this.michaelDavisGenerator.generateTopicSpecificPost(specificTopic);
+      } else {
+        postContent = await this.michaelDavisGenerator.generatePost();
+      }
+      
+      // Display results
+      this.displayMichaelDavisResults(postContent);
+      
+      // Handle user actions
+      await this.handleMichaelDavisActions(postContent);
+
+    } catch (error) {
+      console.error('❌ Error generating Michael Davis post:', error.message);
+    }
+  }
+
+  // Select Michael Davis topic type
+  async selectMichaelDavisTopic() {
+    return new Promise((resolve) => {
+      console.log('📝 What type of Michael Davis post would you like?');
+      console.log('1. Random topic (auto-generated)');
+      console.log('2. Specific topic (South Downtown, Housing, etc.)');
+      console.log('3. Back to main menu\n');
+
+      this.rl.question('Enter your choice (1-3): ', (answer) => {
+        switch (answer.trim()) {
+          case '1':
+            resolve('random');
+            break;
+          case '2':
+            resolve('specific');
+            break;
+          case '3':
+            resolve('back');
+            break;
+          default:
+            console.log('❌ Invalid choice. Please enter 1, 2, or 3.');
+            resolve(this.selectMichaelDavisTopic());
+        }
+      });
+    });
+  }
+
+  // Select specific topic
+  async selectSpecificTopic() {
+    return new Promise((resolve) => {
+      console.log('\n📝 Select a specific topic:');
+      console.log('1. South Downtown development opportunities');
+      console.log('2. Housing & Tax Legislation');
+      console.log('3. Homegrown investment strategies');
+      console.log('4. Overline venture capital insights');
+      console.log('5. Atlanta Tech Village ecosystem');
+      console.log('6. Back to topic selection\n');
+
+      this.rl.question('Enter your choice (1-6): ', (answer) => {
+        switch (answer.trim()) {
+          case '1':
+            resolve('South Downtown development opportunities');
+            break;
+          case '2':
+            resolve('Atlanta housing market trends and legislation impact');
+            break;
+          case '3':
+            resolve('Homegrown investment strategies and portfolio management');
+            break;
+          case '4':
+            resolve('Overline venture capital insights and startup investing');
+            break;
+          case '5':
+            resolve('Atlanta Tech Village ecosystem and community building');
+            break;
+          case '6':
+            resolve('back');
+            break;
+          default:
+            console.log('❌ Invalid choice. Please enter 1-6.');
+            resolve(this.selectSpecificTopic());
+        }
+      });
+    });
   }
 
   // Display fintech post results
@@ -285,49 +393,119 @@ class UnifiedPostGenerator {
     });
   }
 
+  // Display Michael Davis post results
+  displayMichaelDavisResults(postContent) {
+    console.log('\n📝 Generated Michael Davis Post:');
+    console.log('=================================');
+    console.log(`Topic: ${postContent.metadata.topic}`);
+    console.log(`Category: ${postContent.metadata.category}`);
+    console.log(`Style: ${postContent.metadata.style}`);
+    console.log(`Timestamp: ${new Date(postContent.metadata.timestamp).toLocaleString()}`);
+    console.log('\nContent:');
+    console.log('--------');
+    console.log(postContent.content);
+    
+    console.log('\n📊 Post Analysis:');
+    console.log('=================');
+    const wordCount = postContent.content.split(' ').length;
+    const charCount = postContent.content.length;
+    const emojiCount = (postContent.content.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu) || []).length;
+    
+    console.log(`Word Count: ${wordCount} (Ideal: 100-300)`);
+    console.log(`Character Count: ${charCount} (Ideal: 600-1500)`);
+    console.log(`Emoji Count: ${emojiCount} (Ideal: 3-8)`);
+    
+    console.log('\n🎯 Michael Davis Style Elements:');
+    console.log(`${postContent.content.includes('?') ? '✅' : '❌'} Has Question: ${postContent.content.includes('?') ? 'Yes' : 'No'}`);
+    console.log(`${postContent.content.includes('•') || postContent.content.includes('-') ? '✅' : '❌'} Has Bullet Points: ${postContent.content.includes('•') || postContent.content.includes('-') ? 'Yes' : 'No'}`);
+    console.log(`${postContent.content.toLowerCase().includes('atlanta') ? '✅' : '❌'} References Atlanta: ${postContent.content.toLowerCase().includes('atlanta') ? 'Yes' : 'No'}`);
+    console.log(`${postContent.content.toLowerCase().includes('i\'ve') || postContent.content.toLowerCase().includes('i\'m') ? '✅' : '❌'} Personal Voice: ${postContent.content.toLowerCase().includes('i\'ve') || postContent.content.toLowerCase().includes('i\'m') ? 'Yes' : 'No'}`);
+    
+    console.log('\n💡 Post ready for LinkedIn!');
+  }
+
+  // Handle Michael Davis post actions
+  async handleMichaelDavisActions(postContent) {
+    return new Promise((resolve) => {
+      console.log('\n🤔 What would you like to do?');
+      console.log('1. Approve and post now');
+      console.log('2. Regenerate content');
+      console.log('3. Edit content manually');
+      console.log('4. Save for later (not post)');
+      console.log('5. Generate different topic');
+      console.log('6. Exit without saving\n');
+
+      this.rl.question('Enter your choice (1-6): ', async (answer) => {
+        switch (answer.trim()) {
+          case '1':
+            await this.approveAndPost(postContent, null, 'michael-davis');
+            break;
+          case '2':
+            await this.generateMichaelDavisPost();
+            break;
+          case '3':
+            await this.editContent(postContent, 'michael-davis');
+            break;
+          case '4':
+            await this.saveForLater(postContent, null, 'michael-davis');
+            break;
+          case '5':
+            await this.generateMichaelDavisPost();
+            break;
+          case '6':
+            console.log('👋 Exiting without saving.');
+            break;
+          default:
+            console.log('❌ Invalid choice. Please try again.');
+            await this.handleMichaelDavisActions(postContent);
+        }
+        resolve();
+      });
+    });
+  }
+
   // Approve and post
   async approveAndPost(postContent, imageResult, postType) {
     console.log(`\n✅ Approving ${postType} post for publishing...`);
-    
     try {
       // Test LinkedIn connection first
       console.log('🔗 Testing LinkedIn connection...');
       const isConnected = await this.linkedinAPI.testConnection();
-      
       if (!isConnected) {
         console.log('❌ LinkedIn connection failed. Please authenticate first.');
         console.log('💡 Run: npm run auth');
         return;
       }
-
       // Confirm posting
       const confirmed = await this.confirmPosting(postContent, postType);
       if (!confirmed) {
         console.log('❌ Posting cancelled by user.');
         return;
       }
-
       // Post to LinkedIn
-      console.log('📤 Posting to LinkedIn...');
+      let imagePathToUse = imageResult && imageResult.success ? imageResult.imagePath : null;
+      if (process.env.LINKEDIN_NO_IMAGE) {
+        console.log('DEBUG: LINKEDIN_NO_IMAGE is set, posting without image.');
+        imagePathToUse = null;
+      }
+      const postText = typeof postContent === 'object' ? postContent.content : postContent;
       const postResult = await this.linkedinAPI.createPost(
-        postContent, 
-        imageResult.success ? imageResult.imagePath : null
+        postText,
+        imagePathToUse
       );
-
-      if (postResult) {
+      console.log('LinkedIn API post result:', postResult);
+      if (postResult && postResult.id) {
         console.log('🎉 Post published successfully!');
         console.log(`📊 Post ID: ${postResult.id}`);
-        
         // Save to database
         await this.savePostToDatabase(postContent, imageResult, postType, postResult.id);
-        
         console.log('💾 Post saved to database for analytics tracking.');
+      } else {
+        console.error('❌ LinkedIn post failed:', postResult);
       }
-
     } catch (error) {
       console.error('❌ Error posting to LinkedIn:', error.message);
-      
-      if (error.message.includes('401') || error.message.includes('expired')) {
+      if (error.message && (error.message.includes('401') || error.message.includes('expired'))) {
         console.log('🔑 Access token may be expired. Please re-authenticate:');
         console.log('💡 Run: npm run auth');
       }

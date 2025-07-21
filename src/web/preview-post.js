@@ -1,4 +1,4 @@
-const ContentGenerator = require('./content-generator');
+const ContentGenerator = require('../generators/fintech/simple-generator');
 const readline = require('readline');
 
 class PostPreview {

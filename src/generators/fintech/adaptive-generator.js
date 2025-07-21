@@ -1,6 +1,7 @@
 const EnhancedContentGenerator = require('./enhanced-content-generator');
 const LinkedInAnalytics = require('./linkedin-analytics');
 const fs = require('fs');
+const config = require('../../../config.js');
 
 class AdaptiveContentGenerator extends EnhancedContentGenerator {
   constructor() {

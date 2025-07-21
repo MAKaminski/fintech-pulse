@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const PostDatabase = require('./database');
+const config = require('../../config.js');
 
 class LinkedInAnalytics {
   constructor() {

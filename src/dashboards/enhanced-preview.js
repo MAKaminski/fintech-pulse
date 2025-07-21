@@ -1,5 +1,5 @@
-const EnhancedContentGenerator = require('./enhanced-content-generator');
-const PostDatabase = require('./database');
+const EnhancedContentGenerator = require('../generators/fintech/generator');
+const PostDatabase = require('../utils/database');
 const readline = require('readline');
 const moment = require('moment-timezone');
 const config = require('../config');

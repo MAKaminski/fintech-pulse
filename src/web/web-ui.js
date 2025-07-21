@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const PostDatabase = require('./database');
-const EnhancedContentGenerator = require('./enhanced-content-generator');
+const PostDatabase = require('../utils/database');
+const EnhancedContentGenerator = require('../generators/fintech/generator');
 
 class WebUI {
   constructor() {

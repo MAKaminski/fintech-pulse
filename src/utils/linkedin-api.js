@@ -1,6 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
-const config = require('../config');
+const config = require('../../config.js');
 
 class LinkedInAPI {
   constructor() {
@@ -90,17 +90,16 @@ class LinkedInAPI {
     try {
       // Get the user's profile to get the author URN
       const profile = await this.getProfile();
-      
-      // For OpenID Connect, we need to construct the URN differently
-      // The sub field contains the LinkedIn member ID
       const authorUrn = `urn:li:person:${profile.sub}`;
-
+      console.log('authorUrn:', authorUrn);
       // Upload image if provided
       let mediaAsset = null;
       if (imagePath) {
         mediaAsset = await this.uploadImage(imagePath);
+        console.log('mediaAsset:', mediaAsset);
+      } else {
+        console.log('No imagePath provided, posting text-only.');
       }
-
       // Create the post
       const postData = {
         author: authorUrn,
@@ -110,8 +109,8 @@ class LinkedInAPI {
             shareCommentary: {
               text: text
             },
-            shareMediaCategory: mediaAsset ? 'IMAGE' : 'NONE',
-            ...(mediaAsset && {
+            shareMediaCategory: mediaAsset && typeof mediaAsset === 'string' && mediaAsset.startsWith('urn:li:digitalmediaAsset:') ? 'IMAGE' : 'NONE',
+            ...(mediaAsset && typeof mediaAsset === 'string' && mediaAsset.startsWith('urn:li:digitalmediaAsset:') && {
               media: [
                 {
                   status: 'READY',
@@ -131,7 +130,7 @@ class LinkedInAPI {
           'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
         }
       };
-
+      console.log('LinkedIn postData:', JSON.stringify(postData, null, 2));
       const response = await axios.post(`${this.baseURL}/ugcPosts`, postData, {
         headers: {
           'Authorization': `Bearer ${this.accessToken}`,
@@ -139,10 +138,8 @@ class LinkedInAPI {
           'X-Restli-Protocol-Version': '2.0.0'
         }
       });
-
       console.log('✅ Post created successfully!');
       console.log('Post ID:', response.data.id);
-      
       // Log the post content for reference
       console.log('📝 Posted content:');
       console.log(text);
@@ -150,18 +147,14 @@ class LinkedInAPI {
         console.log('🖼️  Image included:', imagePath);
       }
       console.log('---');
-
-      return response.data;
-
+      return { success: true, ...response.data };
     } catch (error) {
-      console.error('❌ Error creating post:', error.response?.data || error.message);
-      
-      if (error.response?.status === 401) {
-        console.error('🔑 Access token may be expired. Please re-authenticate.');
-        console.error('Run: npm run auth');
+      if (error.response) {
+        console.error('❌ Error posting to LinkedIn (response):', error.response.data);
+      } else {
+        console.error('❌ Error posting to LinkedIn:', error.message);
       }
-      
-      throw error;
+      return { success: false, error: error.response?.data || error.message };
     }
   }
 

@@ -1,4 +1,4 @@
-const PostScheduler = require('./scheduler');
+const PostScheduler = require('./cli/scheduler');
 const config = require('../config');
 
 class FintechPulseAgent {

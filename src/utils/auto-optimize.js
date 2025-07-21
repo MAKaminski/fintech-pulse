@@ -1,5 +1,6 @@
 const LinkedInAnalytics = require('./linkedin-analytics');
 const PostDatabase = require('./database');
+const config = require('../../config.js');
 
 class AutoOptimizer {
   constructor() {

@@ -1,6 +1,75 @@
 # FintechPulse LinkedIn Agent
 
-An advanced automated LinkedIn posting agent that creates and publishes optimized fintech-focused content twice daily at 8:30 AM and 4:00 PM EST, with comprehensive analytics and engagement optimization.
+> **Project Organization Update (2024):**
+> - All guides, profiles, data, and config files are now in their own folders for clarity.
+> - The project root is intentionally kept clean for easy navigation and onboarding.
+> - See `guides/` for documentation, `profiles/` for writing/persona profiles, `data/` for analytics and tokens, and `config/` for configuration files.
+
+---
+
+## 🗂️ Directory Structure (2024 Refactor)
+
+```
+fintech-pulse/
+  ├── src/
+  │   ├── generators/
+  │   │   ├── michael-davis/
+  │   │   │   ├── generator.js
+  │   │   │   └── cli.js
+  │   │   ├── personal/
+  │   │   │   └── generator.js
+  │   │   ├── fintech/
+  │   │   │   ├── generator.js
+  │   │   │   ├── adaptive-generator.js
+  │   │   │   └── simple-generator.js
+  │   ├── scrapers/
+  │   │   ├── substack-scraper.js
+  │   │   └── scrape-michael-davis.js
+  │   ├── utils/
+  │   │   ├── database.js
+  │   │   ├── linkedin-api.js
+  │   │   ├── linkedin-analytics.js
+  │   │   ├── auto-optimize.js
+  │   │   ├── test-connections.js
+  │   │   ├── example-connections.js
+  │   │   ├── enhanced-connections.js
+  │   │   ├── linkedin-connections.js
+  │   │   └── auth.js
+  │   ├── dashboards/
+  │   │   ├── analytics-dashboard.js
+  │   │   └── enhanced-preview.js
+  │   ├── cli/
+  │   │   ├── unified-post-generator.js
+  │   │   ├── analytics-cli.js
+  │   │   ├── test-post.js
+  │   │   ├── demo-integration.js
+  │   │   ├── scheduler.js
+  │   │   └── connection-cli.js
+  │   ├── web/
+  │   │   ├── web-ui.js
+  │   │   ├── simple-web-ui.js
+  │   │   ├── preview-post.js
+  │   │   └── view-images.js
+  │   └── index.js
+  ├── assets/
+  │   └── images/           # All generated images are stored here
+  ├── guides/               # All documentation and how-to guides
+  ├── profiles/             # All writing and persona profiles
+  ├── data/                 # All JSON, DB, and token files
+  ├── config/               # All configuration JSON files
+  ├── package.json
+  ├── README.md
+  └── ...
+```
+
+- **All generators, CLIs, scrapers, dashboards, and utilities are grouped by type.**
+- **All images are now in `assets/images/`.**
+- **Guides and profiles are in their own folders for easy access.**
+- **All guides, profiles, data, and config files are now in their own folders.**
+- **The project root is intentionally kept clean for easy navigation.**
+- **See `guides/`, `profiles/`, `data/`, and `config/` for supporting files.**
+
+---
 
 ## 🎯 Agent Profile
 
@@ -10,7 +79,11 @@ An advanced automated LinkedIn posting agent that creates and publishes optimize
 - **Audience**: Fintech & PE Executives
 - **Content**: Industry insights, statistics, quotes, and actionable insights
 
+---
+
 ## 🚀 Quick Start
+
+> **Note:** For documentation, writing style guides, and configuration, see the `guides/`, `profiles/`, and `config/` folders.
 
 ### 1. Install Dependencies
 
@@ -58,7 +131,9 @@ npm start
 
 The agent will now run continuously and post automatically at 8:30 AM and 4:00 PM EST daily.
 
-## 📋 Available Commands
+---
+
+## 📋 Available Commands (2024 Structure)
 
 | Command | Description |
 |---------|-------------|
@@ -67,14 +142,25 @@ The agent will now run continuously and post automatically at 8:30 AM and 4:00 P
 | `npm run auth` | Authenticate with LinkedIn |
 | `npm run test` | Test content generation and LinkedIn connection |
 | `npm run preview` | Basic post preview and editing |
-| `npm run enhanced-preview` | **NEW** Advanced preview with analytics |
-| `npm run enhanced-multiple` | **NEW** Generate multiple optimized options |
-| `npm run view-images` | **NEW** View generated images and stats |
-| `npm run web-ui` | **NEW** Web-based configuration and preview |
-| `npm run dev` | Start with nodemon for development |
-| `node src/index.js --manual-post` | Post immediately |
-| `node src/index.js --status` | Show agent status |
-| `node src/index.js --help` | Show all available commands |
+| `npm run enhanced-preview` | Advanced preview with analytics |
+| `npm run enhanced-multiple` | Generate multiple optimized options |
+| `npm run view-images` | View generated images and stats |
+| `npm run web-ui` | Web-based configuration and preview |
+| `npm run michael-davis` | Michael Davis-style post generator CLI |
+| `npm run md` | Alias for Michael Davis CLI |
+| `npm run scrape-md` | Scrape all Michael Davis Substack posts |
+| `npm run generate-post` | Unified post generator CLI (choose style) |
+| `npm run analytics` | Analytics dashboard |
+| `npm run analytics-report` | LinkedIn analytics report |
+| `npm run adaptive-preview` | Adaptive content preview |
+| `npm run auto-optimize` | Run auto-optimization |
+| `npm run demo-integration` | Demo integration CLI |
+| `npm run view-images` | View all generated images |
+| `npm run connections` | Connection management CLI |
+| `npm run example-connections` | Example connections utility |
+| `npm run test-connections` | Test LinkedIn connections |
+
+---
 
 ## 🆕 Enhanced Features
 
@@ -133,6 +219,8 @@ The agent will now run continuously and post automatically at 8:30 AM and 4:00 P
 - **Decision Logging**: Approved, rejected, saved posts
 - **Trend Analysis**: 30-day performance reports
 
+---
+
 ## 📊 Content Features
 
 ### Automatic Content Generation
@@ -165,6 +253,8 @@ If OpenAI is unavailable, the agent uses pre-written templates with:
 - Consistent branding
 - **NEW**: Optimized engagement elements
 
+---
+
 ## 🔧 Technical Details
 
 ### Architecture
@@ -192,6 +282,8 @@ If OpenAI is unavailable, the agent uses pre-written templates with:
 - **Git Ignore**: Sensitive files automatically excluded from version control
 - **No Hardcoded Secrets**: All credentials loaded from environment variables
 
+---
+
 ## 🌐 Web-Based Configuration
 
 ### Web UI Dashboard
@@ -213,6 +305,8 @@ npm run web-ui
 - **Preview**: Generate and review posts before posting
 - **Analytics**: View performance metrics and trends
 - **Images**: Browse generated images and their associated posts
+
+---
 
 ## 📈 Enhanced Preview System
 
@@ -266,6 +360,8 @@ Engagement Score: 100/100
 💡 Recommendation: Post immediately - high viral potential
 ```
 
+---
+
 ## 🛠️ Troubleshooting
 
 ### Common Issues
@@ -298,6 +394,8 @@ The agent provides detailed console logging:
 - 📝 Content previews
 - ⏰ Scheduling information
 - 📊 Performance metrics
+
+---
 
 ## 📈 Monitoring & Analytics
 
@@ -333,6 +431,8 @@ WHERE post_decision = 'posted';
 SELECT * FROM analytics ORDER BY date DESC;
 ```
 
+---
+
 ## 🔄 Maintenance
 
 ### Regular Tasks
@@ -347,9 +447,13 @@ SELECT * FROM analytics ORDER BY date DESC;
 - Review and refresh content themes
 - Analyze performance trends
 
+---
+
 ## 📝 License
 
 MIT License - see LICENSE file for details.
+
+---
 
 ## 🔒 Security & Privacy
 
@@ -381,6 +485,8 @@ When someone clones your public repository:
 2. Use `npm run setup` for interactive configuration
 3. Or copy `env.example` to `.env` and edit manually
 4. All their credentials will be stored locally
+
+---
 
 ## 🤝 Support
 

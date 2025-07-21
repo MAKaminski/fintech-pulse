@@ -1,0 +1,54 @@
+{
+  "preferredTitles": [
+    "CEO",
+    "CTO",
+    "CFO",
+    "COO",
+    "VP",
+    "Director",
+    "Manager",
+    "Founder",
+    "Co-Founder",
+    "Partner",
+    "Principal",
+    "Associate",
+    "Analyst",
+    "Consultant",
+    "Advisor",
+    "Board Member"
+  ],
+  "preferredIndustries": [
+    "Financial Services",
+    "Technology",
+    "Consulting",
+    "Private Equity",
+    "Venture Capital",
+    "Investment Banking",
+    "Fintech",
+    "Software",
+    "Healthcare",
+    "Real Estate",
+    "Manufacturing",
+    "Retail"
+  ],
+  "companySizes": [
+    "51-200",
+    "201-500",
+    "501-1000",
+    "1001-5000",
+    "5001-10000",
+    "10001+"
+  ],
+  "excludeTitles": [
+    "Intern",
+    "Student",
+    "Freelancer"
+  ],
+  "maxConnectionsPerCompany": 50,
+  "connectionDelay": {
+    "min": 3000,
+    "max": 8000
+  },
+  "dailyTarget": 100,
+  "weeklyTarget": 500
+}
