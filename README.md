@@ -1,4 +1,4 @@
-# FintechPulse LinkedIn Agent
+6# FintechPulse LinkedIn Agent
 
 > **Project Organization Update (2024):**
 > - All guides, profiles, data, and config files are now in their own folders for clarity.

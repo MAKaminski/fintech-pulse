@@ -2,7 +2,7 @@ const EnhancedContentGenerator = require('../generators/fintech/generator');
 const PostDatabase = require('../utils/database');
 const readline = require('readline');
 const moment = require('moment-timezone');
-const config = require('../config');
+const config = require('../../config.js');
 
 class EnhancedPostPreview {
   constructor() {

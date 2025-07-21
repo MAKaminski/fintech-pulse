@@ -2,6 +2,7 @@ const readline = require('readline');
 const EnhancedContentGenerator = require('../generators/fintech/generator');
 const PersonalContentGenerator = require('../generators/personal/generator');
 const MichaelDavisGenerator = require('../generators/michael-davis/generator');
+const ContinuingEducationGenerator = require('../generators/education/generator');
 const PostDatabase = require('../utils/database');
 const LinkedInAPI = require('../utils/linkedin-api');
 
@@ -10,6 +11,7 @@ class UnifiedPostGenerator {
     this.enhancedGenerator = new EnhancedContentGenerator();
     this.personalGenerator = new PersonalContentGenerator();
     this.michaelDavisGenerator = new MichaelDavisGenerator();
+    this.educationGenerator = new ContinuingEducationGenerator();
     this.database = new PostDatabase();
     this.linkedinAPI = new LinkedInAPI();
     this.rl = readline.createInterface({
@@ -38,6 +40,8 @@ class UnifiedPostGenerator {
         await this.generatePersonalPost();
       } else if (postType === 'michael-davis') {
         await this.generateMichaelDavisPost();
+      } else if (postType === 'education') {
+        await this.generateEducationPost();
       } else {
         console.log('❌ Invalid selection. Exiting...');
         process.exit(0);
@@ -57,9 +61,10 @@ class UnifiedPostGenerator {
       console.log('1. FintechPulse Post (Business/Industry focused)');
       console.log('2. Personal Post (Personal branding/opportunities)');
       console.log('3. Michael Davis Post (Exonomist style)');
-      console.log('4. Exit\n');
+      console.log('4. Continuing Education Post (Course recommendations)');
+      console.log('5. Exit\n');
 
-      this.rl.question('Enter your choice (1-4): ', (answer) => {
+      this.rl.question('Enter your choice (1-5): ', (answer) => {
         switch (answer.trim()) {
           case '1':
             resolve('fintech');
@@ -71,10 +76,13 @@ class UnifiedPostGenerator {
             resolve('michael-davis');
             break;
           case '4':
+            resolve('education');
+            break;
+          case '5':
             resolve('exit');
             break;
           default:
-            console.log('❌ Invalid choice. Please enter 1, 2, 3, or 4.');
+            console.log('❌ Invalid choice. Please enter 1, 2, 3, 4, or 5.');
             resolve(this.selectPostType());
         }
       });
@@ -168,6 +176,34 @@ class UnifiedPostGenerator {
 
     } catch (error) {
       console.error('❌ Error generating Michael Davis post:', error.message);
+    }
+  }
+
+  // Generate Continuing Education Post
+  async generateEducationPost() {
+    console.log('\n📚 Generating Continuing Education Post...');
+    console.log('=============================================\n');
+
+    try {
+      // Generate content
+      console.log('🤖 Generating continuing education content...');
+      const postContent = await this.educationGenerator.generateEducationPost();
+      
+      // Generate image
+      console.log('🎨 Generating continuing education image...');
+      const imageResult = await this.educationGenerator.generateImage(postContent);
+      
+      // Calculate metrics (reuse fintech metrics for now)
+      const metrics = this.enhancedGenerator.calculateEngagementMetrics(postContent);
+      
+      // Display results
+      this.displayEducationResults(postContent, imageResult, metrics);
+      
+      // Handle user actions
+      await this.handleEducationActions(postContent, imageResult, metrics);
+
+    } catch (error) {
+      console.error('❌ Error generating continuing education post:', error.message);
     }
   }
 
@@ -309,6 +345,39 @@ class UnifiedPostGenerator {
     console.log(`💬 Estimated Interactions: ${metrics.estimatedInteractions}`);
   }
 
+  // Display Continuing Education Post results
+  displayEducationResults(postContent, imageResult, metrics) {
+    console.log('\n📚 Generated Continuing Education Post:');
+    console.log('============================================');
+    console.log(postContent);
+    console.log('\n🖼️  Generated Image:');
+    console.log('==================');
+    if (imageResult.success) {
+      console.log(`📁 File: ${imageResult.filename}`);
+      console.log(`📍 Path: ${imageResult.imagePath}`);
+      console.log(`🔗 URL: ${imageResult.url}`);
+    } else {
+      console.log('❌ Image generation failed');
+    }
+
+    console.log('\n📊 Post Analysis:');
+    console.log('=================');
+    console.log(`Word Count: ${metrics.metrics.wordCount} (Ideal: 50-150)`);
+    console.log(`Character Count: ${metrics.metrics.charCount} (Ideal: 300-1300)`);
+    console.log(`Emoji Count: ${metrics.metrics.emojiCount} (Ideal: 5-12)`);
+    console.log(`Engagement Score: ${metrics.engagementScore}/100`);
+
+    console.log('\n🎯 Continuing Education Post Elements:');
+    console.log(`${metrics.metrics.hasCourseRecommendation ? '✅' : '❌'} Has Course Recommendation: ${metrics.metrics.hasCourseRecommendation ? 'Yes' : 'No'}`);
+    console.log(`${metrics.metrics.hasCallToAction ? '✅' : '❌'} Has Call-to-Action: ${metrics.metrics.hasCallToAction ? 'Yes' : 'No'}`);
+    console.log(`${metrics.metrics.hasQuestion ? '✅' : '❌'} Has Question: ${metrics.metrics.hasQuestion ? 'Yes' : 'No'}`);
+
+    console.log('\n📈 Estimated Performance:');
+    console.log(`👁️  Estimated Views: ${metrics.estimatedViews.toLocaleString()}`);
+    console.log(`🖱️  Estimated Clicks: ${metrics.estimatedClicks}`);
+    console.log(`💬 Estimated Interactions: ${metrics.estimatedInteractions}`);
+  }
+
   // Handle fintech post actions
   async handleFintechActions(postContent, imageResult, metrics) {
     return new Promise((resolve) => {
@@ -387,6 +456,46 @@ class UnifiedPostGenerator {
           default:
             console.log('❌ Invalid choice. Please try again.');
             await this.handlePersonalActions(postContent, imageResult, metrics);
+        }
+        resolve();
+      });
+    });
+  }
+
+  // Handle Continuing Education Post actions
+  async handleEducationActions(postContent, imageResult, metrics) {
+    return new Promise((resolve) => {
+      console.log('\n🤔 What would you like to do?');
+      console.log('1. Approve and post now');
+      console.log('2. Regenerate content');
+      console.log('3. Edit content manually');
+      console.log('4. Save for later (not post)');
+      console.log('5. Reject and regenerate');
+      console.log('6. Exit without saving\n');
+
+      this.rl.question('Enter your choice (1-6): ', async (answer) => {
+        switch (answer.trim()) {
+          case '1':
+            await this.approveAndPost(postContent, imageResult, 'education');
+            break;
+          case '2':
+            await this.generateEducationPost();
+            break;
+          case '3':
+            await this.editContent(postContent, 'education');
+            break;
+          case '4':
+            await this.saveForLater(postContent, imageResult, 'education');
+            break;
+          case '5':
+            await this.generateEducationPost();
+            break;
+          case '6':
+            console.log('👋 Exiting without saving.');
+            break;
+          default:
+            console.log('❌ Invalid choice. Please try again.');
+            await this.handleEducationActions(postContent, imageResult, metrics);
         }
         resolve();
       });
@@ -535,7 +644,7 @@ class UnifiedPostGenerator {
         postNumber,
         content: postContent,
         imagePath: imageResult.success ? imageResult.imagePath : null,
-        postType: postType, // 'fintech' or 'personal'
+        postType: postType, // 'fintech', 'personal', 'michael-davis', or 'education'
         postDecision: 'posted',
         linkedinPostId,
         postedAt: new Date().toISOString(),
