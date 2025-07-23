@@ -1,7 +1,4 @@
-const { jest } = require('@jest/globals');
-
 // Import the class directly without mocks for unit testing
-jest.unmock('../../../src/generators/fintech/generator');
 const EnhancedContentGenerator = require('../../../src/generators/fintech/generator');
 
 describe('EnhancedContentGenerator', () => {

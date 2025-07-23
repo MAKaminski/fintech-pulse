@@ -1,10 +1,6 @@
-const { jest } = require('@jest/globals');
 const request = require('supertest');
 
 // Mock external dependencies but test actual integration
-jest.unmock('../../src/cli/unified-post-generator');
-jest.unmock('../../src/generators/fintech/generator');
-jest.unmock('../../src/utils/database');
 
 const UnifiedPostGenerator = require('../../src/cli/unified-post-generator');
 const PostDatabase = require('../../src/utils/database');

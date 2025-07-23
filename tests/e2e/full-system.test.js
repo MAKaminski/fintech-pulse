@@ -1,4 +1,3 @@
-const { jest } = require('@jest/globals');
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');

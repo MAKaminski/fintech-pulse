@@ -1,7 +1,4 @@
-const { jest } = require('@jest/globals');
-
 // Import actual module for unit testing
-jest.unmock('../../../src/utils/database');
 const PostDatabase = require('../../../src/utils/database');
 
 describe('PostDatabase', () => {

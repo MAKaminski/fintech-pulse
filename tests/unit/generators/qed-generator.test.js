@@ -1,7 +1,4 @@
-const { jest } = require('@jest/globals');
-
 // Import the QED generator directly for unit testing
-jest.unmock('../../../src/generators/qed/generator');
 const QEDInvestmentGenerator = require('../../../src/generators/qed/generator');
 
 describe('QEDInvestmentGenerator', () => {
