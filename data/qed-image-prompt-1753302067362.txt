@@ -1,0 +1,19 @@
+QED Investors LinkedIn Post Image Prompt
+Generated: 2025-07-23T20:21:07.362Z
+Theme: Investment insights and market analysis
+Focus: Embedded finance
+
+DALL-E Prompt:
+Professional investment analysis visualization with global market data and growth metrics, high quality, modern design, LinkedIn post format, QED Investors branding colors
+
+Usage Instructions:
+1. Copy the prompt above
+2. Use with DALL-E 3, Midjourney, or similar AI image generator
+3. Download the generated image
+4. Upload to LinkedIn when posting
+
+Recommended Image Specs for LinkedIn:
+- Aspect Ratio: 1.91:1 (landscape) or 1:1 (square)
+- Resolution: 1200x628px (landscape) or 1080x1080px (square)
+- Format: PNG or JPG
+- File Size: Under 5MB

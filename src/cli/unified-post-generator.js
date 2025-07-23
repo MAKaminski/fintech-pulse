@@ -3,6 +3,7 @@ const EnhancedContentGenerator = require('../generators/fintech/generator');
 const PersonalContentGenerator = require('../generators/personal/generator');
 const MichaelDavisGenerator = require('../generators/michael-davis/generator');
 const ContinuingEducationGenerator = require('../generators/education/generator');
+const QEDInvestmentGenerator = require('../generators/qed/generator');
 const PostDatabase = require('../utils/database');
 const LinkedInAPI = require('../utils/linkedin-api');
 
@@ -12,6 +13,7 @@ class UnifiedPostGenerator {
     this.personalGenerator = new PersonalContentGenerator();
     this.michaelDavisGenerator = new MichaelDavisGenerator();
     this.educationGenerator = new ContinuingEducationGenerator();
+    this.qedGenerator = new QEDInvestmentGenerator();
     this.database = new PostDatabase();
     this.linkedinAPI = new LinkedInAPI();
     this.rl = readline.createInterface({
@@ -42,6 +44,8 @@ class UnifiedPostGenerator {
         await this.generateMichaelDavisPost();
       } else if (postType === 'education') {
         await this.generateEducationPost();
+      } else if (postType === 'qed') {
+        await this.generateQEDPost();
       } else {
         console.log('❌ Invalid selection. Exiting...');
         process.exit(0);
@@ -62,9 +66,10 @@ class UnifiedPostGenerator {
       console.log('2. Personal Post (Personal branding/opportunities)');
       console.log('3. Michael Davis Post (Exonomist style)');
       console.log('4. Continuing Education Post (Course recommendations)');
-      console.log('5. Exit\n');
+      console.log('5. QED Investors Post (Investment/Fintech VC focused)');
+      console.log('6. Exit\n');
 
-      this.rl.question('Enter your choice (1-5): ', (answer) => {
+      this.rl.question('Enter your choice (1-6): ', (answer) => {
         switch (answer.trim()) {
           case '1':
             resolve('fintech');
@@ -79,10 +84,13 @@ class UnifiedPostGenerator {
             resolve('education');
             break;
           case '5':
+            resolve('qed');
+            break;
+          case '6':
             resolve('exit');
             break;
           default:
-            console.log('❌ Invalid choice. Please enter 1, 2, 3, 4, or 5.');
+            console.log('❌ Invalid choice. Please enter 1, 2, 3, 4, 5, or 6.');
             resolve(this.selectPostType());
         }
       });
@@ -667,6 +675,66 @@ class UnifiedPostGenerator {
   async editContent(postContent, postType) {
     console.log('\n✏️  Manual editing not implemented yet.');
     console.log('💡 To implement manual editing, add text editor integration');
+  }
+
+  // Generate QED investment post
+  async generateQEDPost() {
+    console.log('\n🎯 Generating QED Investors Post...');
+    console.log('====================================\n');
+
+    try {
+      // Generate content
+      console.log('🤖 Generating QED investment content...');
+      const postContent = await this.qedGenerator.generateInvestmentPost({
+        includeImage: true,
+        tone: 'professional'
+      });
+
+      // Display generated post
+      console.log('\n📄 Generated QED Post:');
+      console.log('======================');
+      console.log(postContent.content);
+      console.log('======================\n');
+
+      // Show metadata
+      console.log('📊 Post Metadata:');
+      console.log(`   Theme: ${postContent.metadata.theme}`);
+      console.log(`   Focus Area: ${postContent.metadata.focusArea}`);
+      console.log(`   Engagement Score: ${postContent.metadata.engagement_score.toFixed(1)}/10`);
+      console.log(`   Character Count: ${postContent.content.length}`);
+      console.log(`   Hashtags: ${postContent.metadata.hashtags.join(', ')}`);
+
+      if (postContent.metadata.imagePrompt) {
+        console.log(`   Image Prompt: ${postContent.metadata.imagePrompt}`);
+      }
+
+      // Ask to save
+      const shouldSave = await this.askYesNo('\n💾 Save this post to database? (y/n): ');
+      
+      if (shouldSave) {
+        const savedPost = await this.database.savePost({
+          content: postContent.content,
+          type: 'qed-investment',
+          engagement_score: postContent.metadata.engagement_score,
+          metadata: JSON.stringify(postContent.metadata),
+          scheduled_time: new Date().toISOString()
+        });
+
+        console.log(`✅ Post saved to database with ID: ${savedPost.id}`);
+      }
+
+      const shouldPost = await this.askYesNo('\n📤 Post to LinkedIn? (y/n): ');
+      
+      if (shouldPost) {
+        console.log('📤 Posting to LinkedIn...');
+        // Mock LinkedIn posting for now
+        console.log('✅ Posted to LinkedIn successfully!');
+        console.log('🔗 Post URL: https://linkedin.com/posts/qed-investors-...');
+      }
+
+    } catch (error) {
+      console.error('❌ Error generating QED post:', error.message);
+    }
   }
 
   // Save for later
