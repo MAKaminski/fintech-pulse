@@ -1,7 +1,7 @@
 {
-  "name": "fintech-pulse-linkedin-agent",
+  "name": "fintech-pulse",
   "version": "1.0.0",
-  "description": "Automated LinkedIn posting agent for FintechPulse",
+  "description": "AI-powered LinkedIn content generation and posting tool",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -19,6 +19,7 @@
     "auto-optimize": "node src/utils/auto-optimize.js",
     "demo-integration": "node src/cli/demo-integration.js",
     "generate-post": "node src/cli/unified-post-generator.js",
+    "flat-post": "node src/cli/flat-post-generator.js",
     "view-images": "node src/web/view-images.js",
     "web-ui": "node src/web/web-ui.js",
     "simple-ui": "node src/web/simple-web-ui.js",
@@ -30,29 +31,60 @@
     "test-connections": "node src/utils/test-connections.js",
     "michael-davis": "node src/generators/michael-davis/cli.js",
     "md": "node src/generators/michael-davis/cli.js",
-    "scrape-md": "node src/scrapers/scrape-michael-davis.js"
+    "scrape-md": "node src/scrapers/scrape-michael-davis.js",
+    "unified-post": "node src/cli/unified-post-generator.js",
+    "test:unit": "mocha tests/unit/**/*.test.js --timeout 10000 --require tests/test-setup.js",
+    "test:integration": "mocha tests/integration/**/*.test.js --timeout 15000 --require tests/test-setup.js",
+    "test:e2e": "mocha tests/e2e/**/*.test.js --timeout 30000 --require tests/test-setup.js",
+    "test:all": "node tests/run-tests.js",
+    "test:coverage": "nyc npm run test:all",
+    "test:watch": "mocha tests/**/*.test.js --watch --timeout 10000 --require tests/test-setup.js",
+    "test:quick": "node tests/run-tests.js unit"
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "cheerio": "^1.1.1",
+    "cheerio": "^1.0.0-rc.12",
+    "cron": "^3.1.6",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "moment-timezone": "^0.5.43",
     "node-cron": "^3.0.3",
-    "node-fetch": "^3.3.2",
     "openai": "^4.20.1",
-    "puppeteer": "^21.11.0",
-    "sqlite3": "^5.1.7"
+    "puppeteer": "^21.5.2",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "chai": "^5.2.1",
+    "mocha": "^10.8.2",
+    "nyc": "^15.1.0",
+    "sinon": "^17.0.1",
+    "sinon-chai": "^4.0.0"
   },
   "keywords": [
     "linkedin",
-    "automation",
+    "content-generation",
+    "ai",
     "fintech",
-    "social-media"
+    "social-media",
+    "automation"
   ],
-  "author": "FintechPulse",
-  "license": "MIT"
+  "author": "Your Name",
+  "license": "MIT",
+  "nyc": {
+    "all": true,
+    "check-coverage": true,
+    "reporter": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "exclude": [
+      "tests/**/*",
+      "node_modules/**/*",
+      "coverage/**/*"
+    ],
+    "branches": 80,
+    "lines": 80,
+    "functions": 80,
+    "statements": 80
+  }
 }

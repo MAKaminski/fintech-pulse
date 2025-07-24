@@ -129,4 +129,5 @@ class ContinuingEducationGenerator {
   }
 }
 
-module.exports = ContinuingEducationGenerator; 
+module.exports = ContinuingEducationGenerator;
+module.exports.getRandomCourse = getRandomCourse; 

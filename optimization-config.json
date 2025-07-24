@@ -1,0 +1,14 @@
+{
+  "contentGeneration": {
+    "optimalWordCount": 100,
+    "optimalEmojiCount": 8,
+    "includeQuestions": true,
+    "includeStats": true
+  },
+  "engagementScoring": {
+    "multiplier": 1
+  },
+  "confidence": "low",
+  "lastOptimization": "2025-07-24T15:23:51.273Z",
+  "message": "Basic configuration created - post content to enable data-driven optimization"
+}
