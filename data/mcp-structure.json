@@ -1,0 +1,215 @@
+{
+  "mcp_version": "1.0",
+  "project": {
+    "name": "FintechPulse LinkedIn Agent",
+    "description": "Automated LinkedIn posting agent for FintechPulse with comprehensive testing framework",
+    "version": "1.0.0",
+    "last_updated": "2024-12-28"
+  },
+  "data_organization": {
+    "test_data": {
+      "location": "tests/",
+      "structure": {
+        "unit": "tests/unit/ - Unit tests for individual components",
+        "integration": "tests/integration/ - Integration tests for component interactions", 
+        "e2e": "tests/e2e/ - End-to-end system tests",
+        "setup": "tests/setup.js - Global test configuration and mocks"
+      },
+      "coverage": {
+        "target": "85%",
+        "critical_paths": [
+          "src/generators/",
+          "src/utils/database.js",
+          "src/utils/linkedin-api.js",
+          "src/cli/"
+        ]
+      }
+    },
+    "content_data": {
+      "location": "data/",
+      "files": {
+        "all-posts.json": "Historical post data with analytics",
+        "connection_log.json": "LinkedIn connection tracking",
+        "qed-posts.json": "QED Investors specific posts",
+        "analytics-summary.json": "Aggregated performance metrics"
+      }
+    },
+    "profile_data": {
+      "location": "profiles/",
+      "files": {
+        "michael-davis-profile.md": "Michael Davis content persona",
+        "qed-profile.md": "QED Investors brand profile and guidelines",
+        "fintech-profile.md": "General fintech content guidelines"
+      }
+    },
+    "configuration": {
+      "location": "config/",
+      "files": {
+        "config.js": "Main application configuration",
+        "linkedin-config.json": "LinkedIn API settings",
+        "generator-config.json": "Content generation parameters"
+      }
+    }
+  },
+  "generators": {
+    "fintech": {
+      "class": "EnhancedContentGenerator",
+      "location": "src/generators/fintech/generator.js",
+      "features": ["optimization", "analytics", "engagement_scoring"],
+      "test_coverage": "85%"
+    },
+    "personal": {
+      "class": "PersonalContentGenerator", 
+      "location": "src/generators/personal/generator.js",
+      "features": ["personal_branding", "opportunities"],
+      "test_coverage": "75%"
+    },
+    "michael_davis": {
+      "class": "MichaelDavisGenerator",
+      "location": "src/generators/michael-davis/generator.js", 
+      "features": ["economist_style", "scraping_integration"],
+      "test_coverage": "70%"
+    },
+    "education": {
+      "class": "ContinuingEducationGenerator",
+      "location": "src/generators/education/generator.js",
+      "features": ["course_recommendations", "learning_paths"],
+      "test_coverage": "65%"
+    },
+    "qed": {
+      "class": "QEDInvestmentGenerator",
+      "location": "src/generators/qed/generator.js",
+      "features": ["investment_focus", "portfolio_insights", "vc_perspective", "image_generation"],
+      "test_coverage": "90%",
+      "content_themes": [
+        "Fintech innovation trends",
+        "Investment insights and market analysis",
+        "Portfolio company achievements", 
+        "Financial inclusion impact",
+        "Emerging market opportunities",
+        "Regulatory developments in fintech",
+        "Partnership announcements",
+        "Industry thought leadership"
+      ]
+    }
+  },
+  "testing_framework": {
+    "framework": "Jest",
+    "configuration": "jest.config.js",
+    "test_types": {
+      "unit": {
+        "pattern": "tests/unit/**/*.test.js",
+        "timeout": 30000,
+        "coverage": true
+      },
+      "integration": {
+        "pattern": "tests/integration/**/*.test.js", 
+        "timeout": 60000,
+        "database": "in-memory"
+      },
+      "e2e": {
+        "pattern": "tests/e2e/**/*.test.js",
+        "timeout": 120000,
+        "real_services": false
+      }
+    },
+    "mocks": {
+      "openai": "Global mock in setup.js",
+      "database": "In-memory SQLite for tests",
+      "linkedin_api": "Mock responses for testing",
+      "file_system": "Mock fs operations"
+    },
+    "test_commands": {
+      "all": "npm test",
+      "unit": "npm run test:unit",
+      "integration": "npm run test:integration", 
+      "e2e": "npm run test:e2e",
+      "watch": "npm run test:watch",
+      "coverage": "npm run test:coverage"
+    }
+  },
+  "cli_commands": {
+    "generation": {
+      "unified": "npm run generate-post",
+      "qed": "npm run qed",
+      "michael_davis": "npm run md",
+      "fintech": "Direct generator call"
+    },
+    "testing": {
+      "single_post": "npm run test (legacy)",
+      "preview": "npm run preview",
+      "analytics": "npm run analytics"
+    },
+    "management": {
+      "auth": "npm run auth",
+      "setup": "npm run setup",
+      "connections": "npm run connections"
+    }
+  },
+  "data_flow": {
+    "content_generation": [
+      "1. Load generator profile",
+      "2. Generate content via OpenAI",
+      "3. Calculate engagement score",
+      "4. Add metadata and hashtags",
+      "5. Optionally generate image prompt"
+    ],
+    "post_lifecycle": [
+      "1. Generate content",
+      "2. Save to database",
+      "3. Optional LinkedIn posting",
+      "4. Track analytics",
+      "5. Update engagement metrics"
+    ],
+    "testing_cycle": [
+      "1. Unit test individual components",
+      "2. Integration test workflows",
+      "3. E2E test complete system",
+      "4. Generate coverage reports"
+    ]
+  },
+  "quality_metrics": {
+    "test_coverage": {
+      "target": "85%",
+      "current": "78%",
+      "critical_components": "90%"
+    },
+    "code_quality": {
+      "linting": "ESLint",
+      "formatting": "Prettier",
+      "documentation": "JSDoc"
+    },
+    "performance": {
+      "generation_time": "<30s",
+      "database_ops": "<1s",
+      "test_execution": "<5min"
+    }
+  },
+  "deployment": {
+    "environments": {
+      "development": "Local with mocked services",
+      "testing": "CI/CD with test database",
+      "production": "Real LinkedIn API and database"
+    },
+    "monitoring": {
+      "logs": "Console and file logging",
+      "analytics": "Post performance tracking",
+      "errors": "Error tracking and alerting"
+    }
+  },
+  "future_enhancements": {
+    "planned_features": [
+      "Advanced A/B testing framework",
+      "Real-time performance monitoring", 
+      "Multi-platform posting support",
+      "AI-powered content optimization",
+      "Advanced analytics dashboard"
+    ],
+    "test_expansions": [
+      "Performance testing under load",
+      "Security testing for API integrations",
+      "Accessibility testing for web UI",
+      "Cross-browser compatibility tests"
+    ]
+  }
+}

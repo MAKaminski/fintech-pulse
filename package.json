@@ -8,7 +8,13 @@
     "dev": "nodemon src/index.js",
     "setup": "node setup.js",
     "auth": "node src/utils/auth.js",
-    "test": "node src/cli/test-post.js",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:e2e": "jest tests/e2e",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false",
     "preview": "node src/web/preview-post.js",
     "preview-multiple": "node src/web/preview-post.js --multiple 3",
     "enhanced-preview": "node src/dashboards/enhanced-preview.js",
@@ -20,6 +26,7 @@
     "demo-integration": "node src/cli/demo-integration.js",
     "generate-post": "node src/cli/unified-post-generator.js",
     "flat-post": "node src/cli/flat-post-generator.js",
+    "generate-qed": "node src/cli/unified-post-generator.js --qed",
     "view-images": "node src/web/view-images.js",
     "web-ui": "node src/web/web-ui.js",
     "simple-ui": "node src/web/simple-web-ui.js",
@@ -33,13 +40,8 @@
     "md": "node src/generators/michael-davis/cli.js",
     "scrape-md": "node src/scrapers/scrape-michael-davis.js",
     "unified-post": "node src/cli/unified-post-generator.js",
-    "test:unit": "mocha tests/unit/**/*.test.js --timeout 10000 --require tests/test-setup.js",
-    "test:integration": "mocha tests/integration/**/*.test.js --timeout 15000 --require tests/test-setup.js",
-    "test:e2e": "mocha tests/e2e/**/*.test.js --timeout 30000 --require tests/test-setup.js",
-    "test:all": "node tests/run-tests.js",
-    "test:coverage": "nyc npm run test:all",
-    "test:watch": "mocha tests/**/*.test.js --watch --timeout 10000 --require tests/test-setup.js",
-    "test:quick": "node tests/run-tests.js unit"
+    "qed": "node src/cli/qed-generator.js",
+    "qed-post": "node src/cli/qed-generator.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -57,7 +59,11 @@
     "mocha": "^10.8.2",
     "nyc": "^15.1.0",
     "sinon": "^17.0.1",
-    "sinon-chai": "^4.0.0"
+    "sinon-chai": "^4.0.0",
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "@jest/globals": "^29.7.0"
   },
   "keywords": [
     "linkedin",
