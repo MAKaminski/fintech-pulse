@@ -1,0 +1,178 @@
+{
+  "generatedAt": "2025-07-27T22:06:48.806Z",
+  "summary": {
+    "totalPosts": 5,
+    "averageViews": 455.8,
+    "averageEngagementRate": 0,
+    "bestPerformingPost": {
+      "postId": "sample_1",
+      "views": 812,
+      "likes": 44,
+      "comments": 4,
+      "shares": 5,
+      "clicks": 9,
+      "engagement": 0,
+      "engagementRate": 0,
+      "fetchedAt": "2025-07-27T22:06:47.437Z",
+      "isMockData": true,
+      "postNumber": 1,
+      "content": "🚀 The fintech revolution is accelerating faster than ever! Digital payments grew 23% YoY, with mobile wallets leading the charge. What's your take on the future of banking? #Fintech #DigitalPayments #Innovation",
+      "estimatedViews": 1500,
+      "estimatedClicks": 75,
+      "estimatedInteractions": 45,
+      "engagementScore": 85
+    },
+    "worstPerformingPost": {
+      "postId": "sample_1",
+      "views": 812,
+      "likes": 44,
+      "comments": 4,
+      "shares": 5,
+      "clicks": 9,
+      "engagement": 0,
+      "engagementRate": 0,
+      "fetchedAt": "2025-07-27T22:06:47.437Z",
+      "isMockData": true,
+      "postNumber": 1,
+      "content": "🚀 The fintech revolution is accelerating faster than ever! Digital payments grew 23% YoY, with mobile wallets leading the charge. What's your take on the future of banking? #Fintech #DigitalPayments #Innovation",
+      "estimatedViews": 1500,
+      "estimatedClicks": 75,
+      "estimatedInteractions": 45,
+      "engagementScore": 85
+    }
+  },
+  "insights": [
+    {
+      "type": "overall_variance",
+      "title": "Overall Estimation Accuracy",
+      "description": "Average variance between estimated and actual views: -58.8%",
+      "value": -58.77933333333333,
+      "severity": "high"
+    },
+    {
+      "type": "low_engagement_pattern",
+      "title": "Low Engagement Posts Analysis",
+      "description": "5 posts achieved <2% engagement rate",
+      "value": 87.6,
+      "details": "Average engagement score: 87.6/100"
+    }
+  ],
+  "recommendations": [
+    {
+      "type": "estimation_adjustment",
+      "priority": "high",
+      "title": "Adjust Engagement Scoring Algorithm",
+      "description": "Large variance indicates need to recalibrate estimation model",
+      "action": "Update engagement scoring weights based on actual performance data"
+    },
+    {
+      "type": "content_avoidance",
+      "priority": "medium",
+      "title": "Avoid Low-Performing Content Elements",
+      "description": "Reduce usage of: Questions, Statistics",
+      "action": "Decrease weight of underperforming content patterns"
+    }
+  ],
+  "suggestions": {
+    "engagementScoring": {
+      "multiplier": 0,
+      "description": "Adjust engagement scoring by 0.00x to match actual performance",
+      "confidence": "medium"
+    },
+    "contentGeneration": {},
+    "timing": {},
+    "overall": {}
+  },
+  "detailedAnalytics": [
+    {
+      "postId": "sample_1",
+      "views": 812,
+      "likes": 44,
+      "comments": 4,
+      "shares": 5,
+      "clicks": 9,
+      "engagement": 0,
+      "engagementRate": 0,
+      "fetchedAt": "2025-07-27T22:06:47.437Z",
+      "isMockData": true,
+      "postNumber": 1,
+      "content": "🚀 The fintech revolution is accelerating faster than ever! Digital payments grew 23% YoY, with mobile wallets leading the charge. What's your take on the future of banking? #Fintech #DigitalPayments #Innovation",
+      "estimatedViews": 1500,
+      "estimatedClicks": 75,
+      "estimatedInteractions": 45,
+      "engagementScore": 85
+    },
+    {
+      "postId": "sample_2",
+      "views": 307,
+      "likes": 49,
+      "comments": 1,
+      "shares": 1,
+      "clicks": 4,
+      "engagement": 0,
+      "engagementRate": 0,
+      "fetchedAt": "2025-07-27T22:06:47.690Z",
+      "isMockData": true,
+      "postNumber": 2,
+      "content": "💡 Just finished reading about how AI is transforming customer service in banking. The numbers are staggering - 67% reduction in response times! What's your experience with AI-powered banking? #AI #Banking #CustomerService",
+      "estimatedViews": 2000,
+      "estimatedClicks": 100,
+      "estimatedInteractions": 60,
+      "engagementScore": 92
+    },
+    {
+      "postId": "sample_3",
+      "views": 256,
+      "likes": 13,
+      "comments": 1,
+      "shares": 1,
+      "clicks": 6,
+      "engagement": 0,
+      "engagementRate": 0,
+      "fetchedAt": "2025-07-27T22:06:47.890Z",
+      "isMockData": true,
+      "postNumber": 3,
+      "content": "🎯 Personal finance tip: Start with the 50/30/20 rule - 50% needs, 30% wants, 20% savings. It's simple but effective! What's your favorite budgeting strategy? #PersonalFinance #Budgeting #FinancialFreedom",
+      "estimatedViews": 1200,
+      "estimatedClicks": 60,
+      "estimatedInteractions": 36,
+      "engagementScore": 78
+    },
+    {
+      "postId": "sample_4",
+      "views": 137,
+      "likes": 33,
+      "comments": 9,
+      "shares": 1,
+      "clicks": 6,
+      "engagement": 0,
+      "engagementRate": 0,
+      "fetchedAt": "2025-07-27T22:06:48.282Z",
+      "isMockData": true,
+      "postNumber": 4,
+      "content": "📚 Learning about blockchain technology today. The potential for decentralized finance is incredible! Anyone else excited about DeFi? #Blockchain #DeFi #Cryptocurrency",
+      "estimatedViews": 1800,
+      "estimatedClicks": 90,
+      "estimatedInteractions": 54,
+      "engagementScore": 88
+    },
+    {
+      "postId": "sample_5",
+      "views": 767,
+      "likes": 9,
+      "comments": 2,
+      "shares": 2,
+      "clicks": 16,
+      "engagement": 0,
+      "engagementRate": 0,
+      "fetchedAt": "2025-07-27T22:06:48.805Z",
+      "isMockData": true,
+      "postNumber": 5,
+      "content": "🔥 The future of work is here! Remote-first companies are seeing 25% higher productivity. How has remote work changed your professional life? #RemoteWork #FutureOfWork #Productivity",
+      "estimatedViews": 2500,
+      "estimatedClicks": 125,
+      "estimatedInteractions": 75,
+      "engagementScore": 95
+    }
+  ]
+}

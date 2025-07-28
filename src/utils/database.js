@@ -22,7 +22,7 @@ class PostDatabase {
           reject(err);
           return;
         }
-        
+
         // Check if actual_engagement_rate column exists
         this.db.all("PRAGMA table_info(posts)", [], (err, columns) => {
           if (err) {
@@ -30,10 +30,10 @@ class PostDatabase {
             reject(err);
             return;
           }
-          
+
           const hasEngagementRate = columns.some(col => col.name === 'actual_engagement_rate');
           const hasPostType = columns.some(col => col.name === 'post_type');
-          
+
           if (!hasEngagementRate) {
             console.log('🔄 Adding actual_engagement_rate column to posts table...');
             this.db.run("ALTER TABLE posts ADD COLUMN actual_engagement_rate REAL", (err) => {
@@ -161,14 +161,14 @@ class PostDatabase {
             reject(err);
           }
         });
-        
+
         this.db.run(createAnalyticsTable, (err) => {
           if (err) {
             console.error('Error creating analytics table:', err.message);
             reject(err);
           }
         });
-        
+
         this.db.run(createNewsTable, (err) => {
           if (err) {
             console.error('Error creating news table:', err.message);
@@ -227,7 +227,7 @@ class PostDatabase {
         engagementScore, estimatedViews, estimatedClicks, estimatedInteractions,
         similarityScore, hasQuestion, hasCallToAction, hasStats,
         hasAttentionGrabber, postType, notes
-      ], function(err) {
+      ], function (err) {
         if (err) {
           reject(err);
         } else {
@@ -246,7 +246,7 @@ class PostDatabase {
         WHERE id = ?
       `;
 
-      this.db.run(sql, [linkedinPostId, postedAt, postId], function(err) {
+      this.db.run(sql, [linkedinPostId, postedAt, postId], function (err) {
         if (err) {
           reject(err);
         } else {
@@ -260,7 +260,7 @@ class PostDatabase {
   async updatePostDecision(postId, decision) {
     return new Promise((resolve, reject) => {
       const sql = `UPDATE posts SET post_decision = ? WHERE id = ?`;
-      this.db.run(sql, [decision, postId], function(err) {
+      this.db.run(sql, [decision, postId], function (err) {
         if (err) {
           reject(err);
         } else {
@@ -293,7 +293,7 @@ class PostDatabase {
         ORDER BY posted_at DESC 
         LIMIT ?
       `;
-      
+
       this.db.all(sql, [limit], (err, rows) => {
         if (err) {
           reject(err);
@@ -323,7 +323,7 @@ class PostDatabase {
           AVG(actual_engagement_rate) as avg_actual_engagement_rate
         FROM posts
       `;
-      
+
       this.db.get(sql, [], (err, row) => {
         if (err) {
           reject(err);
@@ -345,7 +345,7 @@ class PostDatabase {
         WHERE linkedin_post_id IS NOT NULL AND post_decision = 'posted'
         ORDER BY created_at DESC
       `;
-      
+
       this.db.all(sql, [], (err, rows) => {
         if (err) {
           reject(err);
@@ -365,7 +365,7 @@ class PostDatabase {
             actual_shares = ?, actual_clicks = ?, actual_engagement_rate = ?
         WHERE id = ?
       `;
-      
+
       this.db.run(sql, [views, likes, comments, shares, clicks, engagementRate, postId], (err) => {
         if (err) {
           reject(err);
@@ -384,7 +384,7 @@ class PostDatabase {
         ORDER BY created_at DESC 
         LIMIT ?
       `;
-      
+
       this.db.all(sql, [limit], (err, rows) => {
         if (err) {
           reject(err);
@@ -395,17 +395,37 @@ class PostDatabase {
     });
   }
 
+  // Get post by post number
+  async getPostByNumber(postNumber) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT * FROM posts 
+        WHERE post_number = ?
+        ORDER BY created_at DESC 
+        LIMIT 1
+      `;
+
+      this.db.get(sql, [postNumber], (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(row);
+        }
+      });
+    });
+  }
+
   // Save news item
   async saveNewsItem(newsData) {
     return new Promise((resolve, reject) => {
       const { title, description, url, publishedAt } = newsData;
-      
+
       const sql = `
         INSERT INTO news_items (title, description, url, published_at)
         VALUES (?, ?, ?, ?)
       `;
-      
-      this.db.run(sql, [title, description, url, publishedAt], function(err) {
+
+      this.db.run(sql, [title, description, url, publishedAt], function (err) {
         if (err) {
           reject(err);
         } else {
@@ -423,7 +443,7 @@ class PostDatabase {
         ORDER BY published_at DESC 
         LIMIT ?
       `;
-      
+
       this.db.all(sql, [limit], (err, rows) => {
         if (err) {
           reject(err);
@@ -450,7 +470,7 @@ class PostDatabase {
         GROUP BY DATE(created_at)
         ORDER BY date DESC
       `;
-      
+
       this.db.all(sql, [], (err, rows) => {
         if (err) {
           reject(err);
